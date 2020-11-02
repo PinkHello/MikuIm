@@ -1,0 +1,93 @@
+buildscript {
+    ext {
+
+    }
+    repositories {
+        mavenLocal()
+        maven { url "https://maven.aliyun.com/nexus/content/groups/public/" }
+        maven { url "https://repo.spring.io/milestone" }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    }
+}
+
+plugins {
+    id 'java'
+    id 'idea'
+    id 'pmd'
+    id 'checkstyle'
+    id 'maven-publish'
+    id 'jacoco'
+}
+
+group 'io.miku.im'
+version = findProperty 'version' ?: '2.2.1-SNAPSHOT'
+
+allprojects {
+
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'maven-publish'
+    apply plugin: 'jacoco'
+
+    jacocoTestReport {
+        reports {
+            xml.enabled false
+            html.enabled true
+        }
+    }
+    check.dependsOn jacocoTestReport
+
+    apply plugin: 'checkstyle'
+    checkstyle {
+//        configFile =  rootPorject.file()
+        showViolations = true
+        ignoreFailures = false
+    }
+
+//    test.mustRunAfter checkstyleMain, checkstyleTest
+
+
+    apply plugin: 'pmd'
+    dependencies {
+        pmd 'com.alibaba.p3c:p3c-pmd:2.0.0'
+    }
+    pmd {
+        consoleOutput = true
+        ruleSets = [
+                "java-ali-comment",
+                "java-ali-concurrent",
+                "java-ali-constant",
+                "java-ali-exception",
+                "java-ali-flowcontrol",
+                "java-ali-naming",
+                "java-ali-oop",
+                "java-ali-orm",
+                "java-ali-other",
+                "java-ali-set"
+        ]
+        incrementalAnalysis = false
+    }
+
+    repositories {
+        mavenLocal()
+        maven { url "https://maven.aliyun.com/nexus/content/groups/public/" }
+        maven { url "https://repo.spring.io/milestone" }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    }
+
+
+}
+
+subprojects {
+    compile group: 'com.google.guava', name: 'guava', version: '25.1-jre'
+    compile group: 'io.netty', name: 'netty-common', version: '4.1.50.Final'
+    compile group: 'io.netty', name: 'netty-buffer', version: '4.1.50.Final'
+    compile group: 'io.netty', name: 'netty-codec', version: '4.1.50.Final'
+    compile group: 'io.netty', name: 'netty-codec-http', version: '4.1.50.Final'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group: 'com.github.kstyrc', name: 'embedded-redis', version: '0.6'
+
+
+
+}
+
